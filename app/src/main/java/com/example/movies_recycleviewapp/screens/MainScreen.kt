@@ -4,7 +4,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -74,7 +76,7 @@ fun ColumnItem(
 
     {
         Card(modifier = Modifier
-            .width(200.dp)
+            .fillMaxWidth()
             .height(270.dp),
             //shape= CutCornerShape(20.dp)
             elevation = CardDefaults.cardElevation(10.dp),
@@ -84,7 +86,7 @@ fun ColumnItem(
             )
         ){
             Column(modifier=Modifier.fillMaxSize()){
-                Image(painter = painterResource(id = painter[itemIndex]), contentDescription=title[itemIndex], modifier.size(140.dp))
+                Image(painter = painterResource(id = painter[itemIndex]), contentDescription=title[itemIndex], modifier.fillMaxWidth() . aspectRatio(16f/9f))
                 Text(text=title[itemIndex],
                     fontWeight = FontWeight.Bold,
                     fontSize = 24.sp,
