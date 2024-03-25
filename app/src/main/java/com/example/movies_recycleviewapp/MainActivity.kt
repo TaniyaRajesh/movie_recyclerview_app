@@ -35,6 +35,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.movies_recycleviewapp.screens.DetailScreen
+import com.example.movies_recycleviewapp.screens.MainScreen
 import com.example.movies_recycleviewapp.ui.theme.Movies_recycleViewAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -76,88 +83,34 @@ class MainActivity : ComponentActivity() {
                         "Tomato sos, cheese, oregano, corn, jalapeno, chicken"
                     )
 
-                    MyApp(imageId,names,ingredients)
+                    //nav
+                    val navController = rememberNavController()
+                    NavHost(navController =navController , startDestination = "MainScreen"){
+                        composable(route="MainScreen"){
+                            MainScreen(imageId,names,ingredients,navController)
+                        }
+                        composable(route="DetailScreen/{index}",
+                            arguments=listOf(
+                                navArgument(name="index"){
+                                    type = NavType.IntType
+                                }
+                            )
+                        ){index ->
+                        DetailScreen(
+                            photos = imageId,
+                            names = names ,
+                            ingredients = ingredients ,
+                            itemIndex = index.arguments?.getInt("index")
+                            )
+
+                        }
+                    }
                 }
             }
         }
     }
 }
 
-@Composable
-fun MyApp(imageId: Array<Int>,
-          names: Array<String>,
-          ingredients: Array<String>,
-          modifier: Modifier = Modifier)
-    {
-        LazyColumn(contentPadding = PaddingValues(16.dp))
-        {
-            val itemCount = imageId.size
-            items(itemCount){item ->
-                ColumnItem(
-                    itemIndex = item,
-                    painter = imageId,
-                    title = names,
-                    ingredients = ingredients,
-                    modifier
-                )
-            }
-        }
-
-
-
-}
-
-@Composable
-fun ColumnItem(  itemIndex: Int,
-                 painter: Array<Int>,
-                 title: Array<String>,
-                 ingredients: Array<String>,
-                 modifier: Modifier){
-    Card(
-        modifier
-            .padding(10.dp)
-            .wrapContentHeight(),
-            colors = CardDefaults.cardColors(
-            containerColor = Color.White),
-            elevation = CardDefaults.cardElevation(10.dp)
-    )//{
-        //Box(modifier=Modifier.fillMaxSize(),
-           // contentAlignment = Alignment.Center
-        //)
-        {
-            Card(modifier = Modifier
-                .width(200.dp)
-                .height(270.dp),
-                //shape= CutCornerShape(20.dp)
-                elevation = CardDefaults.cardElevation(10.dp),
-                //border = BorderStroke(3.dp, Color.Gray)
-                colors = CardDefaults.cardColors(
-                    containerColor = Color.White
-                )
-            ){
-                Column(modifier=Modifier.fillMaxSize()){
-                    Image(painter = painterResource(id = painter[itemIndex]), contentDescription=title[itemIndex], modifier.size(140.dp))
-                    Text(text=title[itemIndex],
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 24.sp,
-                        modifier = Modifier.padding(10.dp)
-                    )
-
-                    Text(text=ingredients[itemIndex],
-                        fontSize = 18.sp,
-                        modifier = Modifier.padding(6.dp),
-                        maxLines=3,
-                        overflow= TextOverflow.Ellipsis,
-                        color = Color.Gray
-                    )
-                }
-            }
-        //}
-    }
-
-
-
-}
 
 
 
