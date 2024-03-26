@@ -1,38 +1,14 @@
 package com.example.movies_recycleviewapp
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CutCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavType
@@ -43,72 +19,92 @@ import androidx.navigation.navArgument
 import com.example.movies_recycleviewapp.screens.DetailScreen
 import com.example.movies_recycleviewapp.screens.MainScreen
 import com.example.movies_recycleviewapp.ui.theme.Movies_recycleViewAppTheme
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.create
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             Movies_recycleViewAppTheme {
+                val navController = rememberNavController()
 
-                // A surface container using the 'background' color from the theme
+                val names = mutableStateOf<List<String>>(emptyList())
+                val imageId = mutableStateOf<List<String>>(emptyList())
+                val language = mutableStateOf<List<String>>(emptyList())
+
+                fetchMovieData(
+                    onSuccess = { fetchedNames, fetchedImageIds, fetchedlanguage ->
+                        names.value = fetchedNames
+                        imageId.value = fetchedImageIds
+                        language.value = fetchedlanguage!!
+                    },
+                    onFailure = { error ->
+                        Log.e("MainActivity", "Network error: ${error.message}")
+                    }
+                )
+
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-
-                    val imageId = arrayOf(
-                        R.drawable.p1,
-                        R.drawable.p2,
-                        R.drawable.p3,
-                        R.drawable.p4,
-                        R.drawable.p5,
-                        R.drawable.p6
-                    )
-
-                    val names = arrayOf(
-                        "Peperoni",
-                        "Vegan",
-                        "FourCheese",
-                        "Margaritta",
-                        "American",
-                        "Mexican"
-                    )
-
-                    val ingredients = arrayOf(
-                        "Tomato sos, cheese, oregano, peperoni",
-                        "Tomato sos, cheese, oregano, spinach, green paprika, rukola",
-                        "Tomato sos, oregano, mozzarella, goda, parmesan, cheddar",
-                        "Tomato sos, cheese, oregano, bazillion",
-                        "Tomato sos, cheese, oregano, green paprika, red beans",
-                        "Tomato sos, cheese, oregano, corn, jalapeno, chicken"
-                    )
-
-                    //nav
-                    val navController = rememberNavController()
-                    NavHost(navController =navController , startDestination = "MainScreen"){
-                        composable(route="MainScreen"){
-                            MainScreen(imageId,names,ingredients,navController)
+                    NavHost(navController = navController, startDestination = "MainScreen") {
+                        composable(route = "MainScreen") {
+                            MainScreen(
+                                imageId = imageId.value,
+                                names = names.value,
+                                language = language.value,
+                                navController = navController
+                            )
                         }
-                        composable(route="DetailScreen/{index}",
-                            arguments=listOf(
-                                navArgument(name="index"){
-                                    type = NavType.IntType
-                                }
+                        composable(route = "DetailScreen/{index}", arguments = listOf(
+                            navArgument(name = "index") { type = NavType.IntType }
+                        )) { index ->
+                            DetailScreen(
+                                photos = imageId.value,
+                                names = names.value,
+                                language = language.value,
+                                itemIndex = index.arguments?.getInt("index")
                             )
-                        ){index ->
-                        DetailScreen(
-                            photos = imageId,
-                            names = names ,
-                            ingredients = ingredients ,
-                            itemIndex = index.arguments?.getInt("index")
-                            )
-
                         }
                     }
                 }
             }
         }
     }
+        fun fetchMovieData(onSuccess: (List<String>, List<String>, List<String>?) -> Unit, onFailure: (Throwable) -> Unit) {
+            val retrofitBuilder = Retrofit.Builder()
+                .baseUrl("https://api.tvmaze.com/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+                .create(APIInterface::class.java)
+            val retroFitData = retrofitBuilder.getMovieData()
+
+            retroFitData.enqueue(object : Callback<MyData?> {
+                override fun onResponse(call: Call<MyData?>, response: Response<MyData?>) {
+                    if(response.isSuccessful){
+                        val responseBody = response.body()!!
+                        val names = responseBody?.map { it.name } ?: emptyList()
+                        val imageId = responseBody?.map { it.image.medium} ?: emptyList()
+                        val language = responseBody?.map { it.language }
+                        onSuccess(names, imageId, language)
+                    }
+                    else{
+                        onFailure(Throwable("API error: ${response.code()}"))
+                    }
+
+                }
+
+                override fun onFailure(call: Call<MyData?>, t: Throwable) {
+                    onFailure(t)
+                }
+            })
+        }
+
 }
 
 

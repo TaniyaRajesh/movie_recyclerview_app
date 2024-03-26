@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Card
@@ -28,11 +26,11 @@ import androidx.navigation.NavController
 
 @Composable
 fun MainScreen(
-          imageId: Array<Int>,
-          names: Array<String>,
-          ingredients: Array<String>,
-          navController: NavController,
-          modifier: Modifier = Modifier)
+    imageId: List<String>,
+    names: List<String>,
+    language: List<String>,
+    navController: NavController,
+    modifier: Modifier = Modifier)
 {
     LazyColumn(contentPadding = PaddingValues(16.dp))
     {
@@ -42,9 +40,9 @@ fun MainScreen(
                 modifier,
                 painter = imageId,
                 title = names,
-                ingredients = ingredients,
+                language = language,
                 itemIndex = item,
-                navController=navController
+                navController =navController
             )
         }
     }
@@ -56,9 +54,9 @@ fun MainScreen(
 @Composable
 fun ColumnItem(
     modifier: Modifier,
-    painter: Array<Int>,
-    title: Array<String>,
-    ingredients: Array<String>,
+    painter: List<Int>,
+    title: List<String>,
+    language: List<String>,
     itemIndex: Int,
     navController: NavController
 ){
@@ -93,7 +91,7 @@ fun ColumnItem(
                     modifier = Modifier.padding(10.dp)
                 )
 
-                Text(text=ingredients[itemIndex],
+                Text(text=language[itemIndex],
                     fontSize = 18.sp,
                     modifier = Modifier.padding(6.dp),
                     maxLines=3,

@@ -17,13 +17,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.runtime.remember
+import com.google.accompanist.coil.rememberImagePainter
 
 @Composable
 fun DetailScreen(
     modifier: Modifier=Modifier,
-    photos: Array<Int>,
-    names: Array<String>,
-    ingredients: Array<String>,
+    photos: List<String>,
+    names: List<String>,
+    language: List<String>,
     itemIndex: Int?
 ){
     Column(
@@ -36,13 +38,14 @@ fun DetailScreen(
         Box(modifier.fillMaxWidth(),
             contentAlignment = Alignment.Center
         ){
-            Image(painter = painterResource(id = photos[itemIndex!!]),
-                 contentDescription = names[itemIndex],
-                 modifier.clip(RoundedCornerShape(16.dp))
+            Image(
+                painter = rememberImagePainter(photos[itemIndex!!]), // Use image URL here
+                contentDescription = names[itemIndex],
+                modifier.clip(RoundedCornerShape(16.dp))
             )
         }
             Text(text = names[itemIndex!!], fontSize= 30.sp, fontWeight = FontWeight.Bold)
-            Text(text = ingredients[itemIndex], fontSize= 18.sp)
+            Text(text = language[itemIndex], fontSize= 18.sp)
     }
 }
 
