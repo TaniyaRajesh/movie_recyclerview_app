@@ -1,5 +1,6 @@
 package com.example.movies_recycleviewapp.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -9,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Card
@@ -26,9 +29,9 @@ import androidx.navigation.NavController
 
 @Composable
 fun MainScreen(
-    imageId: List<String>,
-    names: List<String>,
-    language: List<String>,
+    imageId: Array<Int>,
+    names: Array<String>,
+    about: Array<String>,
     navController: NavController,
     modifier: Modifier = Modifier)
 {
@@ -40,9 +43,9 @@ fun MainScreen(
                 modifier,
                 painter = imageId,
                 title = names,
-                language = language,
+                about = about,
                 itemIndex = item,
-                navController =navController
+                navController=navController
             )
         }
     }
@@ -54,9 +57,9 @@ fun MainScreen(
 @Composable
 fun ColumnItem(
     modifier: Modifier,
-    painter: List<Int>,
-    title: List<String>,
-    language: List<String>,
+    painter: Array<Int>,
+    title: Array<String>,
+    about: Array<String>,
     itemIndex: Int,
     navController: NavController
 ){
@@ -76,9 +79,8 @@ fun ColumnItem(
         Card(modifier = Modifier
             .fillMaxWidth()
             .height(270.dp),
-            //shape= CutCornerShape(20.dp)
             elevation = CardDefaults.cardElevation(10.dp),
-            //border = BorderStroke(3.dp, Color.Gray)
+            border = BorderStroke(3.dp, Color.Gray),
             colors = CardDefaults.cardColors(
                 containerColor = Color.White
             )
@@ -91,7 +93,7 @@ fun ColumnItem(
                     modifier = Modifier.padding(10.dp)
                 )
 
-                Text(text=language[itemIndex],
+                Text(text=about[itemIndex],
                     fontSize = 18.sp,
                     modifier = Modifier.padding(6.dp),
                     maxLines=3,
@@ -103,6 +105,10 @@ fun ColumnItem(
     }
 
 }
+
+
+
+
 
 
 

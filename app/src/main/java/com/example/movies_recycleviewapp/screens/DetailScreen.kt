@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,15 +18,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.runtime.remember
-import com.google.accompanist.coil.rememberImagePainter
 
 @Composable
 fun DetailScreen(
     modifier: Modifier=Modifier,
-    photos: List<String>,
-    names: List<String>,
-    language: List<String>,
+    photos: Array<Int>,
+    names: Array<String>,
+    about: Array<String>,
     itemIndex: Int?
 ){
     Column(
@@ -38,14 +37,15 @@ fun DetailScreen(
         Box(modifier.fillMaxWidth(),
             contentAlignment = Alignment.Center
         ){
-            Image(
-                painter = rememberImagePainter(photos[itemIndex!!]), // Use image URL here
+            Image(painter = painterResource(id = photos[itemIndex!!]),
                 contentDescription = names[itemIndex],
-                modifier.clip(RoundedCornerShape(16.dp))
+                modifier= Modifier
+                    .size(400.dp)
+                    .clip(RoundedCornerShape(16.dp))
             )
         }
-            Text(text = names[itemIndex!!], fontSize= 30.sp, fontWeight = FontWeight.Bold)
-            Text(text = language[itemIndex], fontSize= 18.sp)
+        Text(text = names[itemIndex!!], fontSize= 30.sp, fontWeight = FontWeight.Bold)
+        Text(text = about[itemIndex], fontSize= 18.sp)
     }
 }
 
